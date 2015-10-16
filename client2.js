@@ -13,12 +13,12 @@ client.connect(PORT, HOST, function() {
 
   console.log('Connected');
 
-  client.write('Hello, server! Client 1 here\n');
+  client.write('Hello, server! Client 2 here.\n');
 
   process.stdin.setEncoding('utf8');
   process.stdin.on('data', function (chunk) {
 
-    client.write('client 1: ' + chunk);
+    client.write('client 2: ' + chunk);
 
   });
 
@@ -32,7 +32,6 @@ client.on('data', function(data) {
 
 client.on('close', function() {
 
-  client.destroy(); // kill client after server's response
   console.log('Connection closed');
 
 });
