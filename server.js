@@ -27,15 +27,29 @@ net.createServer(function(socket) {
 
   sockets.push(socket);
   socket.id = sockets.length;
+  socket.username = null;
 
   console.log('Client ' + socket.id + ' is now connected\n');
+  socket.write('Welcome ' + socket.name + '\n' + 'your id is ' + socket.id + '\n' + 'Please enter a username: ');
 
-  socket.write('Welcome ' + socket.name + '\n' + 'your id is ' + socket.id + '\n');
   broadcast(socket.name + ' joined the chat\n', socket);
 
   //process socket data and write to the stdout
 
   socket.on('data', function(data) {
+
+    if (socket.username === null) {
+
+      if (people[username] === undefined || people[username] !== data.toString()) {
+
+        socket.write('Username is already taken. Please enter a unique username: ');
+
+      }
+
+      socket.username = data;
+      people.username = data;
+
+    }
 
     process.stdin.setEncoding('utf8');
     process.stdout.write(data);
@@ -64,6 +78,8 @@ net.createServer(function(socket) {
 
   console.log('server listening on port ' + PORT);
 
+  //allows Admin to broadcast to all users
+
   process.stdin.on('data', function (chunk) {
 
     broadcast('[ADMIN]: ' + chunk);
@@ -71,6 +87,8 @@ net.createServer(function(socket) {
   });
 
 });
+
+//broadcast function
 
 function broadcast(message, sender) {
 
