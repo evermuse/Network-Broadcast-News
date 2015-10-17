@@ -1,6 +1,6 @@
 var net = require('net');
 var fs = require('fs');
-var split = require('split');
+//var split = require('split');
 
 //Port to listen on
 
@@ -9,7 +9,13 @@ var PORT = 6969;
 
 //socket array
 
-var clients = [];
+var sockets = (function() {
+
+  return [];
+
+})();
+
+var people = {};
 
 //spin up the server and listen
 
@@ -17,11 +23,10 @@ net.createServer(function(socket) {
 
   socket.name = socket.remoteAddress + ':' + socket.remotePort;
 
-  //push the new socket to the array
+  //push the new socket to the array & increment before display
 
-  //increment before display
-  clients.push(socket);
-  socket.id = clients.length;
+  sockets.push(socket);
+  socket.id = sockets.length;
 
   console.log('Client ' + socket.id + ' is now connected\n');
 
@@ -36,24 +41,6 @@ net.createServer(function(socket) {
     process.stdout.write(data);
 
   });
-
-  process.stdin.on('data', function (chunk) {
-
-    broadcast('admin: ' + chunk);
-
-  });
-
-  function broadcast(message, sender) {
-
-    clients.forEach(function(client) {
-
-      if (client === sender) return;
-
-      client.write(message);
-
-    });
-
-  }
 
   //watch for socket close and filter the exiting socket from the array
 
@@ -73,7 +60,28 @@ net.createServer(function(socket) {
 
   });
 
-}).listen(PORT, HOST);
+}).listen(PORT, HOST, function() {
 
-console.log('server listening on port ' + PORT);
+  console.log('server listening on port ' + PORT);
 
+  process.stdin.on('data', function (chunk) {
+
+    broadcast('[ADMIN]: ' + chunk);
+
+  });
+
+});
+
+function broadcast(message, sender) {
+
+  sockets.forEach(function(client) {
+
+    //console.log(client);
+
+    if (client === sender) return;
+
+    client.write(message);
+
+  });
+
+}

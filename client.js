@@ -32,7 +32,6 @@ client.on('data', function(data) {
 
 client.on('close', function() {
 
-  client.destroy(); // kill client after server's response
   console.log('Connection closed');
 
 });
